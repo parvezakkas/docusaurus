@@ -403,5 +403,4 @@ module.exports = {
   processMetadata,
   generateMetadataDocs,
   generateMetadataBlog,
-  shouldGenerateNextReleaseDocs,
 };

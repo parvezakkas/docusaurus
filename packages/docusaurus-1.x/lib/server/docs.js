@@ -72,60 +72,8 @@ function mdToHtmlify(oldContent, mdToHtml, metadata, siteConfig) {
       const docsSource = metadata.version
         ? metadata.source.replace(/version-.*?\//, '')
         : metadata.source;
-
-      let htmlLink;
-
-      if (readMetadata.shouldGenerateNextReleaseDocs()) {
-        htmlLink =
-          mdToHtml[resolve(docsSource, mdMatch[1])] || mdToHtml[mdMatch[1]];
-      } else {
-        /**
-         * When the very first version is created, all source/markdown files from next release docs
-         * are copied to the directory corresponding to that version. For subsequent versiones being
-         * created, source/markdown files are copied to the corresponding version directory, if and
-         * only if that file had changed in the next release docs. This is how the source files are
-         * maintained when versions are created.
-         *
-         * During build time those files that were not copied to the versioned docs source, are copied
-         * to the build output.
-         *
-         * When `--skip-next-release` build option is used, we need to verify whether the target file path
-         * exists with the "versioned docs" or at the next release docs. If it does, that file will be
-         * available in the build output and the link will be valid. So, update the link from `.md` to
-         * `.html` accordingly.
-         */
-        const originalFilePath = metadata.original_id.match('.+/')
-          ? metadata.original_id.match('.+/')[0]
-          : '';
-
-        const targetFileAtVersionedDoc =
-          'versioned_docs/version-' +
-          metadata.version +
-          '/' +
-          resolve(docsSource, mdMatch[1]);
-
-        const targetFileAtRoot =
-          '../' + siteConfig.docsUrl + '/' + originalFilePath + mdMatch[1];
-
-        if (
-          fs.existsSync(targetFileAtVersionedDoc) ||
-          fs.existsSync(targetFileAtRoot)
-        ) {
-          if (siteConfig.cleanUrl) {
-            htmlLink = docsSource.endsWith('index.md')
-              ? mdMatch[1].replace('.md', '.html')
-              : '../' + mdMatch[1].replace('.md', '.html');
-          } else {
-            htmlLink = mdMatch[1].replace('.md', '.html');
-          }
-        }
-      }
-
-      /**
-       * If there is a valid target link, sanitize the URL according to various configuration
-       * options such as: `clearnUrl`, versions, language, etc. Otherwise, store the target so
-       * that it can be reported as a broken link.
-       */
+      let htmlLink =
+        mdToHtml[resolve(docsSource, mdMatch[1])] || mdToHtml[mdMatch[1]];
       if (htmlLink) {
         htmlLink = getPath(htmlLink, siteConfig.cleanUrl);
         htmlLink = htmlLink.replace('/en/', `/${metadata.language}/`);
