@@ -70,7 +70,7 @@ function mdToHtml(Metadata, siteConfig) {
   const result = {};
   Object.keys(Metadata).forEach(id => {
     const metadata = Metadata[id];
-    if (metadata.language !== 'en' || metadata.original_id) {
+    if (metadata.language !== 'en') {
       return;
     }
     let htmlLink = baseUrl + metadata.permalink.replace('/next/', '/');
@@ -84,7 +84,12 @@ function mdToHtml(Metadata, siteConfig) {
     } else {
       htmlLink = htmlLink.replace(docsRegex, `${baseDocsPart}VERSION/`);
     }
-    result[metadata.source] = htmlLink;
+    const docsSource =
+      metadata.version && metadata.version !== 'next'
+        ? 'version-' + metadata.version + '/' + metadata.original_id + '.md'
+        : metadata.source;
+
+    result[docsSource] = htmlLink;
   });
   return result;
 }

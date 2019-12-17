@@ -69,9 +69,10 @@ function mdToHtmlify(oldContent, mdToHtml, metadata, siteConfig) {
     let mdMatch = mdRegex.exec(modifiedLine);
     while (mdMatch !== null) {
       /* Replace it to correct html link */
-      const docsSource = metadata.version
-        ? metadata.source.replace(/version-.*?\//, '')
-        : metadata.source;
+      const docsSource =
+        metadata.version && metadata.version !== 'next'
+          ? 'version-' + metadata.version + '/' + metadata.original_id + '.md'
+          : metadata.source;
       let htmlLink =
         mdToHtml[resolve(docsSource, mdMatch[1])] || mdToHtml[mdMatch[1]];
       if (htmlLink) {
@@ -79,9 +80,7 @@ function mdToHtmlify(oldContent, mdToHtml, metadata, siteConfig) {
         htmlLink = htmlLink.replace('/en/', `/${metadata.language}/`);
         htmlLink = htmlLink.replace(
           '/VERSION/',
-          metadata.version && metadata.version !== env.versioning.latestVersion
-            ? `/${metadata.version}/`
-            : '/',
+          metadata.version === 'next' ? '/next/' : '/',
         );
         modifiedLine = modifiedLine.replace(mdMatch[1], htmlLink);
       } else {
